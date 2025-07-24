@@ -1,0 +1,101 @@
+View operations 
+mysql> use inventory;
+Database changed
+mysql> create view v3 as select product.pid,pname,qty,price from product,sales where product.pid=sales.pid;
+Query OK, 0 rows affected (0.231 sec)
+mysql> insert into v3 values('100',ghee,1,320);
+ERROR 1394 (HY000): Can not insert into join view 'inventory.v3' without fields list
+mysql> create view v3 as select product.pid,pname,qty,price from product,sales where product.pid=sales.pid;
+mysql> create view v3 as select product.pid,pname,qty,price from product,sales where product.pid=sales.pid;
+Query OK, 0 rows affected (0.231 sec)
+mysql> insert into v3 values('100',ghee,1,320);
+ERROR 1394 (HY000): Can not insert into join view 'inventory.v3' without fields list
+mysql> drop view v3;
+Query OK, 0 rows affected (0.106 sec)
+mysql> drop view v2;
+Query OK, 0 rows affected (0.101 sec)
+mysql> drop view v1;
+Query OK, 0 rows affected (0.097 sec)
+
+
+
+
+
+Indexing -
+mysql> create index X on product(pid,pname);
+Query OK, 0 rows affected (1.161 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+mysql> desc product;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| pid   | int         | NO   | PRI | NULL    |       |
+| pname | varchar(50) | YES  |     | NULL    |       |
+| price | float       | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.190 sec)
+
+mysql> insert into product values(99,GHEE,350);
+ERROR 1054 (42S22): Unknown column 'GHEE' in 'field list'
+mysql> create index X on product(pid,pname);
+ERROR 1061 (42000): Duplicate key name 'X'
+mysql> INSERT INTO product VALUES (99, 'GHEE', 350);
+Query OK, 1 row affected (0.062 sec)
+mysql> SELECT * FROM product;
++-----+-------+-------+
+| pid | pname | price |
++-----+-------+-------+
+|  99 | GHEE  |   350 |
+| 104 | rice  |    60 |
+| 458 | wheat |    50 |
++-----+-------+-------+
+3 rows in set (0.011 sec)
+mysql> SHOW INDEX FROM product;
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| product |          0 | PRIMARY  |            1 | pid         | A         |           2 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| product |          1 | X        |            1 | pid         | A         |           2 |     NULL |   NULL |      | BTREE      |         |               | YES     | NULL       |
+| product |          1 | X        |            2 | pname       | A         |           2 |     NULL |   NULL | YES  | BTREE      |         |               | YES     | NULL       |
++---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+3 rows in set (0.142 sec)
+
+
+
+Logical operation
+mysql> select * from product where price between(100,499);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+mysql> select * from product where price between 100 AND 499;
++-----+-------+-------+
+| pid | pname | price |
++-----+-------+-------+
+|  99 | GHEE  |   350 |
++-----+-------+-------+
+1 row in set (0.005 sec)
+
+mysql> ;
+ERROR:
+No query specified
+mysql> select pname from product where pname like 'g%';
++-------+
+| pname |
++-------+
+| GHEE  |
++-------+
+1 row in set (0.065 sec)
+mysql> select pname from product where pname like '%t';
++-------+
+| pname |
++-------+
+| wheat |
++-------+
+1 row in set (0.004 sec)
+mysql> select pname from product where pname like '%e%';
++-------+
+| pname |
++-------+
+| GHEE  |
+| rice  |
+| wheat |
++-------+
+3 rows in set (0.004 sec)
