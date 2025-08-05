@@ -1,0 +1,62 @@
+Join operations :-
+mysql> SELECT * FROM sales;
++------+------+------+
+| sid  | pid  | qty  |
++------+------+------+
+|  100 |  458 |    1 |
+|  101 |  104 |    2 |
+|  102 |  105 |    5 |
+|  102 |  106 |    6 |
+|  104 |  107 |    2 |
++------+------+------+
+5 rows in set (0.004 sec)
+mysql> SELECT * FROM product;
++-----+---------+-------+
+| pid | pname   | price |
++-----+---------+-------+
+|  99 | GHEE    |   350 |
+| 104 | rice    |    60 |
+| 105 | colgate |    70 |
+| 106 | soap    |    80 |
+| 107 | rin     |    90 |
+| 458 | wheat   |    50 |
++-----+---------+-------+
+6 rows in set (0.005 sec)
+ 
+
+mysql> select pname,price,qty from product inner join sales on product.pid=sales.pid;
++---------+-------+------+
+| pname   | price | qty  |
++---------+-------+------+
+| wheat   |    50 |    1 |
+| rice    |    60 |    2 |
+| colgate |    70 |    5 |
+| soap    |    80 |    6 |
+| rin     |    90 |    2 |
++---------+-------+------+
+5 rows in set (0.005 sec)
+
+mysql> select pname,price,qty from product left join sales on product.pid=sales.pid;
++---------+-------+------+
+| pname   | price | qty  |
++---------+-------+------+
+| GHEE    |   350 | NULL |
+| rice    |    60 |    2 |
+| colgate |    70 |    5 |
+| soap    |    80 |    6 |
+| rin     |    90 |    2 |
+| wheat   |    50 |    1 |
++---------+-------+------+
+6 rows in set (0.060 sec)
+
+mysql> select pname,price,qty from product right join sales on product.pid=sales.pid;
++---------+-------+------+
+| pname   | price | qty  |
++---------+-------+------+
+| wheat   |    50 |    1 |
+| rice    |    60 |    2 |
+| colgate |    70 |    5 |
+| soap    |    80 |    6 |
+| rin     |    90 |    2 |
++---------+-------+------+
+5 rows in set (0.005 sec)
