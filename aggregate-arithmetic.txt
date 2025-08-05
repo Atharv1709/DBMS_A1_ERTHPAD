@@ -1,0 +1,169 @@
+Microsoft Windows [Version 10.0.19045.6093]
+(c) Microsoft Corporation. All rights reserved.
+C:\Program Files\MySQL\MySQL Server 9.3\bin>mysql -h localhost -u mohit -p
+Enter password: ********
+mysql> use inventory;
+Database changed
+mysql> show product;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'product' at line 1
+mysql> desc product;
++-------+-------------+------+-----+---------+-------+
+| Field | Type        | Null | Key | Default | Extra |
++-------+-------------+------+-----+---------+-------+
+| pid   | int         | NO   | PRI | NULL    |       |
+| pname | varchar(50) | YES  |     | NULL    |       |
+| price | float       | YES  |     | NULL    |       |
++-------+-------------+------+-----+---------+-------+
+3 rows in set (0.270 sec)
+
+AGGREGATION OPERATION :-
+mysql> select count (pid) as total_product from product;
+ERROR 1630 (42000): FUNCTION inventory.count does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual
+mysql> select count (pid) as total_product from sales;
+ERROR 1630 (42000): FUNCTION inventory.count does not exist. Check the 'Function Name Parsing and Resolution' section in the Reference Manual
+mysql> select count (*) as pname from product;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '*) as pname from product' at line 1
+mysql> select count(*) as pname from product;
++-------+
+| pname |
++-------+
+|     3 |
++-------+
+1 row in set (0.158 sec)
+mysql> select count(*) as pname from sales;
++-------+
+| pname |
++-------+
+|     2 |
++-------+
+1 row in set (0.144 sec)
+
+mysql> select count(*) as pname from supplier;
++-------+
+| pname |
++-------+
+|     1 |
++-------+
+1 row in set (0.194 sec)
+mysql> select max(price) from product;
++------------+
+| max(price) |
++------------+
+|        350 |
++------------+
+1 row in set (0.059 sec)
+mysql> select min(price) from product;
++------------+
+| min(price) |
++------------+
+|         50 |
++------------+
+1 row in set (0.004 sec)
+mysql> select avg(price) from product;
++--------------------+
+| avg(price)         |
++--------------------+
+| 153.33333333333334 |
++--------------------+
+1 row in set (0.057 sec)
+mysql> select sum(price) from product;
++------------+
+| sum(price) |
++------------+
+|        460 |
++------------+
+1 row in set (0.004 sec)
+ARITHMETIC OPERATIONS:-
+mysql> select float(3.14);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'float(3.14)' at line 1
+mysql> select floor(3.14);
++-------------+
+| floor(3.14) |
++-------------+
+|           3 |
++-------------+
+1 row in set (0.058 sec)
+mysql> select round(3.14);
++-------------+
+| round(3.14) |
+mysql> select power(2,4);
++-----------+
+| power(2,4) |
++------------+
+|         16 |
+1 row in set (0.009 sec)
+mysql> select sqrt(16);
++----------+
+| sqrt(16) |
++----------+
+|        4 |
++----------+
+1 row in set (0.003 sec)
+|           3 |
++-------------+
+1 row in set (0.056 sec)
+
+STRING OPERATIONS :-
+mysql> select length('hello');
++-----------------+
+| length('hello') |
++-----------------+
+|               5 |
++-----------------+
+1 row in set (0.005 sec)
+mysql> select concat('hello','world');
++-------------------------+
+| concat('hello','world') |
++-------------------------+
+| helloworld              |
++-------------------------+
+1 row in set (0.057 sec)
+
+mysql> select concat_ws('hello','world');
++----------------------------+
+| concat_ws('hello','world') |
++----------------------------+
+| world                      |
++----------------------------+
+1 row in set (0.003 sec)
+mysql> select concat_ws('hello','  world');
++------------------------------+
+| concat_ws('hello','  world') |
++------------------------------+
+|   world                      |
++------------------------------+
+1 row in set (0.003 sec)
+mysql> select concat_ws('hello   ','  world');
++---------------------------------+
+| concat_ws('hello   ','  world') |
++---------------------------------+
+|   world                         |
++---------------------------------+
+1 row in set (0.003 sec)
+mysql> select elt(2,'AA','bb','cc');
++-----------------------+
+| elt(2,'AA','bb','cc') |
++-----------------------+
+| bb                    |
++-----------------------+
+1 row in set (0.061 sec)
+mysql> select find_in_set(2,'AA','bb','cc');
+ERROR 1582 (42000): Incorrect parameter count in the call to native function 'find_in_set'
+mysql> select find_in_set(2,'zaiasvud');
++---------------------------+
+| find_in_set(2,'zaiasvud') |
++---------------------------+
+|                         0 |
++---------------------------+
+1 row in set (0.056 sec)
+mysql> select find_in_set(v,'zaiasvud');
+ERROR 1054 (42S22): Unknown column 'v' in 'field list'
+mysql> select insert('helloworld',4,4 'hi');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ''hi')' at line 1
+mysql> select insert('helloworld',4,4, 'hi');
++--------------------------------+
+| insert('helloworld',4,4, 'hi') |
++--------------------------------+
+| helhirld                       |
++--------------------------------+
+1 row in set (0.003 sec)
