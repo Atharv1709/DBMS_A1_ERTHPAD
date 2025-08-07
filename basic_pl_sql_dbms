@@ -1,0 +1,64 @@
+HELLO WORLD –
+begin
+dbms_output.put_line('hello world');
+end;
+/
+OUTPUT –
+SQL> set serveroutput on
+SQL> /
+hello world
+
+PL/SQL procedure successfully completed
+
+ADDITION
+declare 
+a number;
+b number;
+c number;
+begin 
+a:=&a;
+b:=&b;
+c:=a+b;
+dbms_output.put_line('addition is'||c);
+end;
+/
+
+OUTPUT-
+SQL> @ C:\1310\add.sql
+Enter value for a: 10
+old   6: a:=&a;
+new   6: a:=10;
+Enter value for b: 20
+old   7: b:=&b;
+new   7: b:=20;
+addition is30
+
+GREATER NO.-
+declare
+a number;
+b number;
+c number;
+begin
+a:=&a;
+b:=&b;
+
+if a>b then
+dbms_output.put_line('Greatest number is '||a);
+elsif a<b then
+dbms_output.put_line('Greatest number is '||b);
+else 
+dbms_output.put_line('Invalid numbers');
+end if;
+end;
+/
+OUTPUT-
+SQL> @ C:\1310\greater.sql
+Enter value for a: 15
+old   6: a:=&a;
+new   6: a:=15;
+Enter value for b: 25
+old   7: b:=&b;
+new   7: b:=25;
+Greatest number is 25
+
+PL/SQL procedure successfully completed.
