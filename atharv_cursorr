@@ -1,0 +1,192 @@
+Practical 6 
+
+
+=======================================================================================
+SQL*Plus: Release 21.0.0.0.0 - Production on Fri Sep 12  06:58:06 2025
+Version 21.3.0.0.0
+
+Copyright (c) 1982, 2021, Oracle.  All rights reserved.
+
+Enter user-name: system
+Enter password:
+Last Successful login time: Fri Sep 12 2025 07:19:51 +05:30
+
+Connected to:
+Oracle Database 21c Express Edition Release 21.0.0.0.0 - Production
+Version 21.3.0.0.0
+
+SQL> create table employee(eid int,ename varchar(50),salary float,dept varchar(20));
+
+Table created.
+
+SQL> commit;
+
+Commit complete.
+
+SQL> insert into employee values(101,'tom',200000,'Testing');
+
+1 row created.
+
+SQL> insert into employee values(102,'jerry',150000,'Analysis');
+
+1 row created.
+
+SQL> insert into employee values(103,'max',300000,'Developer');
+
+1 row created.
+
+SQL> set serveroutput on;
+SQL> @C:\Users\ASUS\Desktop\DBMS_Practs\PLSQL\cursor.sql
+101 tom 200000 Testing
+102 jerry 150000 Analysis
+103 max  300000 Developer
+
+PL/SQL procedure successfully completed.
+
+
+Parameterized cursor :
+
+declare
+v_dept varchar(20); 
+cursor c1(p_dept employee.dept%type) is select * from employee where dept=p_dept;
+eid number;
+en varchar(50);
+sal number;
+f_dept varchar(20);
+begin
+v_dept:='&dept_name';
+open c1(v_dept);
+loop
+fetch c1 into eid, en, sal, f_dept;
+exit when c1%NOTFOUND;
+dbms_output.put_line(eid||' '||en||' '||sal||' '||f_dept);
+end loop;
+close c1;
+end;
+/
+
+=======================================================================================
+SQL> desc employee;
+ Name                                      Null?    Type
+ ----------------------------------------- -------- ----------------------------
+ EID                                                NUMBER(38)
+ ENAME                                              VARCHAR2(50)
+ SALARY                                             FLOAT(126)
+ DEPT                                               VARCHAR2(20)
+
+SQL> select * from employee;
+
+       EID ENAME                                                  SALARY
+---------- -------------------------------------------------- ----------
+DEPT
+--------------------
+       101 tom                                                  200000
+Testing
+
+       102 jerry                                                  150000
+Analysis
+
+       103 max                                                  300000
+Developer
+
+
+SQL> set serveroutput on;
+SQL> @C:\Users\ASUS\Desktop\DBMS_Practs\PLSQL\p_cur.sql
+Enter value for dept_name: Analysis
+old   9: v_dept:='&dept_name';
+new   9: v_dept:='Analysis';
+102 Suzie 150000 Analysis
+
+PL/SQL procedure successfully completed.
+
+Cursor For Loop :
+
+declare
+rec employee%rowtype;
+avg_sal float;
+cursor c1 is select * from employee for update;
+begin
+select avg(salary) into avg_sal from employee;
+for rec in c1 loop
+if rec.salary<avg_sal then
+update employee set salary=salary+500 where current of c1;
+end if;
+end loop;
+end;
+/
+
+=======================================================================================
+SQL> @C:\Users\ASUS\Desktop\DBMS_Practs\PLSQL\cur_for_loop.sql
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from employee;
+
+       EID ENAME                                                  SALARY
+---------- -------------------------------------------------- ----------
+DEPT
+--------------------
+       101 tom                                                 200500
+Testing
+
+       102 jerry                                                 150500
+Analysis
+
+       103 max                                                  300000
+Developer
+
+Cursor For Delete operation :
+
+declare 
+eid int;
+en varchar(50);
+sal float;
+dept varchar(20);
+cursor c1 is select * from employee where salary<=200000 for update;
+begin
+open c1;
+loop
+fetch c1 into eid,en,sal,dept;
+exit when c1%NOTFOUND;
+delete from employee where current of c1;
+end loop;
+close c1;
+end;
+/
+
+=======================================================================================
+SQL> select * from employee;
+
+       EID ENAME                                                  SALARY
+---------- -------------------------------------------------- ----------
+DEPT
+--------------------
+       101 tom                                                200500
+Testing
+
+       102 jerry                                                 150500
+Analysis
+
+       103 max                                                 300000
+Developer
+
+
+SQL> @C:\Users\ASUS\Desktop\DBMS_Practs\PLSQL\cur_updt.sql
+
+PL/SQL procedure successfully completed.
+
+SQL> select * from employee;
+
+       EID ENAME                                                  SALARY
+---------- -------------------------------------------------- ----------
+DEPT
+--------------------
+       101 tom                                                 200500
+Testing
+
+       103 max                                                  300000
+Developer
+
+
+SQL>
+
