@@ -1,0 +1,87 @@
+Aggregate Operation MongoSH
+Microsoft Windows [Version 10.0.19045.6332]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Program Files\MongoDB\Server\8.2\bin>mongosh
+Current Mongosh Log ID: 68e4b9501946a8b388cebea3
+Connecting to:          mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.5.8
+Using MongoDB:          8.2.0
+Using Mongosh:          2.5.8
+
+For mongosh info see: https://www.mongodb.com/docs/mongodb-shell/
+
+------
+   The server generated these startup warnings when booting
+   2025-10-03T16:02:39.393+05:30: Access control is not enabled for the database. Read and write access to data and configuration is unrestricted
+------
+
+test> show dbs;
+;          8.00 KiB
+admin     40.00 KiB
+college   72.00 KiB
+company  168.00 KiB
+config    36.00 KiB
+dbs       72.00 KiB
+dept      48.00 KiB
+f_mong    80.00 KiB
+local     72.00 KiB
+stud      80.00 KiB
+student   68.00 KiB
+teacher   72.00 KiB
+test      72.00 KiB
+test> use bank;
+switched to db bank
+bank> db.createCollection('customer');
+{ ok: 1 }
+bank> db.customer.insertOne({_id:101,name:'bheem',bal:20000,bank:'BoB',location:'Pune'});
+{ acknowledged: true, insertedId: 101 }
+bank> db.customer.insertOne({_id:101,name:'arjun',bal:500000,bank:'sbi',location:'Pune'})
+MongoServerError: E11000 duplicate key error collection: bank.customer index: _id_ dup key: { _id: 101 }
+bank> db.customer.insertOne({_id:102,name:'arjun',bal:500000,bank:'sbi',location:'Pune'})
+{ acknowledged: true, insertedId: 102 }
+bank> db.customer.insertOne({_id:103,name:'karan',bal:30000,bank:'sbi',location:'chinchwad'})
+{ acknowledged: true, insertedId: 103 }
+bank> db.customer.insertOne({_id:103,name:'jay',bal:1500,bank:'Axis',location:'talegoan'})
+MongoServerError: E11000 duplicate key error collection: bank.customer index: _id_ dup key: { _id: 103 }
+bank> db.customer.insertOne({_id:104,name:'jay',bal:1500,bank:'Axis',location:'talegoan'})
+{ acknowledged: true, insertedId: 104 }
+bank> db.customer.count();
+DeprecationWarning: Collection.count() is deprecated. Use countDocuments or estimatedDocumentCount.
+4
+bank> db.customer.aggregate([{$group:{id:null,total_bal:{$sum:'bal'}}}]);
+MongoServerError[Location40234]: The field 'id' must be an accumulator object
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$sum:'bal'}}}]);
+[ { _id: null, total_bal: 0 } ]
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$sum:'$bal'}}}]);
+[ { _id: null, total_bal: 551500 } ]
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$min:'$bal'}}}]);
+[ { _id: null, total_bal: 1500 } ]
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$max:'$bal'}}}]);
+[ { _id: null, total_bal: 500000 } ]
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$avg:'$bal'}}}]);
+[ { _id: null, total_bal: 137875 } ]
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$push:'$bal'}}}]);
+[ { _id: null, total_bal: [ 20000, 500000, 30000, 1500 ] } ]
+bank> db.customer.insertOne({_id:104,name:'ram',bal:999999,bank:'punjab',location:'talegoan'})
+MongoServerError: E11000 duplicate key error collection: bank.customer index: _id_ dup key: { _id: 104 }
+bank> db.customer.insertOne({_id:105,name:'ram',bal:999999,bank:'punjab',location:'talegoan'})
+{ acknowledged: true, insertedId: 105 }
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$push:'$bal'}}}]);
+[ { _id: null, total_bal: [ 20000, 500000, 30000, 1500, 999999 ] } ]
+bank> db.customer.insertOne({_id:106,name:'atharv',bal:999999,bank:'sbi',location:'mumbai'})
+{ acknowledged: true, insertedId: 106 }
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$push:'$bal'}}}]);
+[
+  {
+    _id: null,
+    total_bal: [ 20000, 500000, 30000, 1500, 999999, 999999 ]
+  }
+]
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$addtoset:'$bal'}}}]);
+MongoServerError[Location15952]: unknown group operator '$addtoset'
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$addToSet:'$bal'}}}]);
+[ { _id: null, total_bal: [ 999999, 500000, 20000, 30000, 1500 ] } ]
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$first:'$bal'}}}]);
+[ { _id: null, total_bal: 20000 } ]
+bank> db.customer.aggregate([{$group:{_id:null,total_bal:{$last:'$bal'}}}]);
+[ { _id: null, total_bal: 999999 } ]
